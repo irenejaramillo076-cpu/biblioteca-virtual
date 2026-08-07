@@ -133,3 +133,68 @@ jobs:
             reports/k6-summary.html
             reports/api-server.log
           if-no-files-found: warn
+
+            security-scan:
+
+    name: OWASP ZAP Baseline Scan
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Seed Database
+        working-directory: backend
+        run: npm run seed
+
+      - name: Start API for ZAP
+        run: |
+          mkdir -p reports
+          chmod 777 reports
+          npm --prefix backend start > reports/zap-api-server.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/salud > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat reports/zap-api-server.log
+          exit 1
+
+      - name: Run OWASP ZAP Baseline Scan
+        continue-on-error: true
+        run: |
+          docker run --network host \
+            -v "${{ github.workspace }}/reports:/zap/wrk/:rw" \
+            -t zaproxy/zap-stable \
+            zap-baseline.py \
+            -t http://127.0.0.1:3000 \
+            -r zap-report.html \
+            -J zap-report.json \
+            -w zap-report.md \
+            -l WARN
+
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-results
+          path: |
+            reports/zap-report.html
+            reports/zap-report.json
+            reports/zap-report.md
+            reports/zap-api-server.log
+          if-no-files-found: warn
