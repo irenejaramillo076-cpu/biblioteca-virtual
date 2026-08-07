@@ -1,0 +1,11 @@
+{
+  "book": {
+    "title": "Automatización de pruebas",
+    "author": "Equipo QA",
+    "copies": 2
+  },
+  "reader": {
+    "name": "Lector de prueba",
+    "phone": "6000-0000"
+  }
+}

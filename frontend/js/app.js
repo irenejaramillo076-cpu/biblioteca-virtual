@@ -3,6 +3,11 @@
 // Consume la API REST expuesta por el backend Express.
 // ============================================================
 const API = '/api';
+const sessionToken = localStorage.getItem('biblioteca_token');
+
+if (!sessionToken) {
+  window.location.replace('/login.html');
+}
 
 const estado = {
   libros: [],
@@ -15,7 +20,10 @@ const estado = {
 // ---------- utilidades ----------
 async function api(path, opciones = {}) {
   const res = await fetch(`${API}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${sessionToken}`,
+    },
     ...opciones,
   });
   if (res.status === 204) return null;
@@ -23,6 +31,18 @@ async function api(path, opciones = {}) {
   if (!res.ok) throw new Error(data?.error || 'Ocurrió un error inesperado');
   return data;
 }
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  try {
+    await fetch(`${API}/auth/logout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${sessionToken}` },
+    });
+  } finally {
+    localStorage.removeItem('biblioteca_token');
+    window.location.replace('/login.html');
+  }
+});
 
 function mostrarToast(mensaje, tipo = 'ok') {
   const toast = document.getElementById('toast');

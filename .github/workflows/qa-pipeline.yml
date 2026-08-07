@@ -1,5 +1,8 @@
 name: QA Pipeline
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -38,10 +41,93 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload Coverage
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: backend/coverage
+          if-no-files-found: error
+
+  e2e-tests:
+
+    name: E2E Playwright + Axe + Allure
+
+    needs: unit-tests
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run 13 E2E Scenarios in Headless Mode
+        run: npm run test:e2e
+
+      - name: Generate Allure Report
+        if: always()
+        run: npm run allure:generate
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-report
+          path: reports/allure-report
+          if-no-files-found: warn
+
+      - name: Upload Failure Screenshots and Traces
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-failure-evidence
+          path: reports/test-results
+          if-no-files-found: warn
+
+  security-scan:
+
+    name: Dependency Security Scan
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Fail on High or Critical Vulnerabilities
+        run: npm audit --audit-level=high
 
   sonarcloud-scan:
 
@@ -120,7 +206,7 @@ jobs:
       - name: Run k6 Load Test
         env:
           BASE_URL: http://127.0.0.1:3000
-        run: k6 run --out json=reports/k6-results.json tests/load-test.js
+        run: k6 run --out json=reports/k6-results.json tests/performance/load-test.js
 
       - name: Upload k6 Results
         if: always()
@@ -134,7 +220,7 @@ jobs:
             reports/api-server.log
           if-no-files-found: warn
 
-  security-scan:
+  zap-scan:
 
     name: OWASP ZAP Baseline Scan
 
