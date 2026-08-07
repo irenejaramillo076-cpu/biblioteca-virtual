@@ -1,12 +1,12 @@
 const request = require('supertest');
 const express = require('express');
 
-jest.mock('../database/db', () => ({
+jest.mock('../../database/db', () => ({
     prepare: jest.fn()
 }));
 
-const db = require('../database/db');
-const librosRouter = require('../routes/libros');
+const db = require('../../database/db');
+const librosRouter = require('../../routes/libros');
 
 const app = express();
 app.use(express.json());
