@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Bases de datos locales
+backend/database/*.db
+backend/database/*.db-shm
+backend/database/*.db-wal
+
+# Resultados generados por pruebas y cobertura
+coverage/
+reports/
+test-results/
+playwright-report/
+allure-results/
+
+# Variables de entorno y archivos del sistema
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
