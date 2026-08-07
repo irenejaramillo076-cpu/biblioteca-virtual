@@ -24,10 +24,10 @@ jobs:
     steps:
 
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -38,9 +38,9 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload Coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: coverage
+          name: coverage-report
           path: backend/coverage
 
   sonarcloud-scan:
@@ -52,12 +52,12 @@ jobs:
     steps:
 
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -74,3 +74,62 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  load-tests:
+
+    name: k6 Load Test
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 10
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Seed Database
+        working-directory: backend
+        run: npm run seed
+
+      - name: Install k6
+        uses: grafana/setup-k6-action@v1.2.1
+
+      - name: Start API
+        run: |
+          mkdir -p reports
+          npm --prefix backend start > reports/api-server.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/salud > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat reports/api-server.log
+          exit 1
+
+      - name: Run k6 Load Test
+        env:
+          BASE_URL: http://127.0.0.1:3000
+        run: k6 run --out json=reports/k6-results.json tests/load-test.js
+
+      - name: Upload k6 Results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: k6-results
+          path: |
+            reports/k6-results.json
+            reports/k6-summary.json
+            reports/k6-summary.html
+            reports/api-server.log
+          if-no-files-found: warn

@@ -1,5 +1,9 @@
 # 📚 Bibliotheca — Biblioteca Virtual
 
+[![QA Pipeline](https://github.com/irenejaramillo076-cpu/biblioteca-virtual/actions/workflows/qa-pipeline.yml/badge.svg)](https://github.com/irenejaramillo076-cpu/biblioteca-virtual/actions/workflows/qa-pipeline.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=irenejaramillo076-cpu_biblioteca-virtual&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=irenejaramillo076-cpu_biblioteca-virtual)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=irenejaramillo076-cpu_biblioteca-virtual&metric=coverage)](https://sonarcloud.io/summary/new_code?id=irenejaramillo076-cpu_biblioteca-virtual)
+
 Proyecto integrador full-stack: gestión de catálogo, lectores y préstamos de una biblioteca.
 
 **Stack:** Node.js + Express (API REST) · SQLite (`better-sqlite3`) · HTML/CSS/JavaScript puro (sin frameworks) en el frontend.
@@ -118,3 +122,14 @@ Todas las respuestas de error usan el formato `{ "error": "mensaje" }` con el c�
 - Migrar de SQLite a MySQL/PostgreSQL cambiando únicamente `backend/database/db.js` (el resto del código usa SQL estándar).
 - Paginación en `/api/libros` para catálogos grandes.
 - Exportar reportes de préstamos a PDF/Excel.
+
+## 8. Calidad, cobertura y rendimiento
+
+El workflow `QA Pipeline` se ejecuta automáticamente en cada *push* o *pull request* a `main`. Incluye:
+
+- Pruebas unitarias con Jest y reporte HTML de cobertura.
+- Análisis estático y *Quality Gate* en SonarQube Cloud.
+- Prueba de carga con k6 contra `GET /api/libros`: 10 usuarios durante 30 segundos, 50 usuarios durante 1 minuto y descenso durante 30 segundos.
+- Umbrales automáticos: p(95) menor de 500 ms, menos del 1% de solicitudes fallidas y más del 99% de checks aprobados.
+
+Al terminar una ejecución, GitHub Actions publica dos artefactos descargables: `coverage-report` y `k6-results`. Este último contiene los resultados detallados en JSON, un resumen JSON y un reporte HTML.
