@@ -107,6 +107,10 @@ npx allure open ../reports/allure-report
 
 En GitHub se descarga desde `Actions > QA Pipeline > ejecución > Artifacts > allure-report`; las capturas, trazas y videos de fallos se publican en `e2e-failure-evidence`.
 
+### Publicación de Allure en GitHub Pages
+
+El workflow manual `Publish Allure Report` vuelve a ejecutar los escenarios, genera el sitio y lo publica sin modificar el pipeline obligatorio; antes de utilizarlo, la persona administradora activa `Settings > Pages > Build and deployment > Source > GitHub Actions`, después abre `Actions > Publish Allure Report > Run workflow`. El enlace permanente resultante es `https://irenejaramillo076-cpu.github.io/biblioteca-virtual/`.
+
 ### Prueba de rendimiento k6
 
 Con el servidor iniciado en otra terminal:
@@ -174,7 +178,7 @@ La IA se utilizó como apoyo para acelerar el diseño y la revisión; la aceptac
 2. Pipeline: `https://github.com/irenejaramillo076-cpu/biblioteca-virtual/actions/workflows/qa-pipeline.yml`
 3. Dashboard de SonarQube Cloud: `https://sonarcloud.io/summary/new_code?id=irenejaramillo076-cpu_biblioteca-virtual`
 4. Coverage: descargar `coverage-report` y abrir `lcov-report/index.html`
-5. Allure: descargar `allure-report` y abrir `index.html` mediante un servidor local
+5. Allure publicado: `https://irenejaramillo076-cpu.github.io/biblioteca-virtual/`; como respaldo, descargar `allure-report` desde la ejecución verde
 6. k6: descargar `k6-results` y abrir `k6-summary.html`
 7. ZAP: descargar `zap-results` y abrir `zap-report.html`
 
