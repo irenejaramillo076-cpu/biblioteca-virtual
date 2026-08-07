@@ -134,7 +134,7 @@ jobs:
             reports/api-server.log
           if-no-files-found: warn
 
-            security-scan:
+  security-scan:
 
     name: OWASP ZAP Baseline Scan
 
