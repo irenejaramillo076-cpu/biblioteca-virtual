@@ -265,9 +265,10 @@ jobs:
           cat reports/zap-api-server.log
           exit 1
 
-      - name: Run OWASP ZAP Baseline Scan
-        continue-on-error: true
+            - name: Run OWASP ZAP Baseline Scan
         run: |
+          set +e
+
           docker run --network host \
             -v "${{ github.workspace }}/reports:/zap/wrk/:rw" \
             -t zaproxy/zap-stable \
@@ -277,6 +278,19 @@ jobs:
             -J zap-report.json \
             -w zap-report.md \
             -l WARN
+
+          ZAP_EXIT=$?
+          set -e
+
+          if [ "$ZAP_EXIT" -eq 0 ]; then
+            echo "OWASP ZAP finalizó sin alertas."
+          elif [ "$ZAP_EXIT" -eq 2 ]; then
+            echo "::warning::OWASP ZAP encontró advertencias documentadas. Revisar el artefacto zap-results."
+            exit 0
+          else
+            echo "OWASP ZAP presentó un error real. Exit code: $ZAP_EXIT"
+            exit "$ZAP_EXIT"
+          fi
 
       - name: Upload ZAP Report
         if: always()
