@@ -177,6 +177,8 @@ Resultado:
 
 Los hallazgos se encuentran documentados y priorizados dentro del Reporte Ejecutivo.
 
+El pipeline interpreta las advertencias esperadas de ZAP como `warning` documentado y mantiene el job en estado Success, mientras que errores reales del escaneo continúan configurados para provocar fallo del job.
+
 ---
 
 # 9. Rendimiento
@@ -214,6 +216,8 @@ El pipeline contiene los siguientes controles:
 
 Los resultados son publicados mediante artefactos automáticos.
 
+La validación final se realizó en dos niveles: primero mediante el Pull Request #1 hacia `main`, donde SonarQube Cloud ejecutó el análisis y aprobó el Quality Gate; posteriormente mediante el pipeline #28 sobre la rama `main` después del merge.
+
 ---
 
 # 11. Allure
@@ -239,9 +243,13 @@ El pipeline publica el artefacto:
 
 SonarQube Cloud se utiliza como herramienta de análisis estático y Quality Gate.
 
-En la rama de trabajo `proyecto-final-qa`, el job se encuentra configurado para ejecutarse al realizar un Pull Request o al trabajar sobre `main`.
+Durante el Pull Request final hacia `main`, el análisis de SonarQube Cloud obtuvo:
 
-Esta configuración evita las restricciones de análisis de ramas y permite ejecutar el Quality Gate durante la validación final del Pull Request.
+- **Quality Gate Passed**;
+- **0 New Issues**;
+- **0 Security Hotspots** en el análisis del PR.
+
+El job también se ejecutó satisfactoriamente en el pipeline final sobre `main`.
 
 ---
 
@@ -294,29 +302,65 @@ Los artefactos generados incluyen:
 - `zap-results`;
 - evidencias E2E cuando existe un fallo.
 
+El pipeline #28 ejecutado sobre `main` generó cuatro artefactos principales y finalizó en estado **Success**.
+
 ---
 
-# 16. Resultado del Entregable 2
+# 16. Validación final en main
+
+El Pull Request #1, titulado **Proyecto Final QA — consolidación y validación final**, fue fusionado correctamente a `main` después de completar el pipeline del PR con todos los jobs aprobados.
+
+El merge generó el commit final:
+
+`0be9bec30cc01acb03e758eb2fa1653f7f5b115f`
+
+Posteriormente se ejecutó automáticamente:
+
+**QA Pipeline #28 — Merge PR #1: Proyecto Final QA**
+
+Resultado:
+
+# **SUCCESS**
+
+Los jobs finales fueron:
+
+| Job | Resultado |
+|---|---|
+| Unit Tests + Coverage | ✅ Success |
+| Dependency Security Scan | ✅ Success |
+| SonarQube Cloud Scan | ✅ Success |
+| k6 Load Test | ✅ Success |
+| OWASP ZAP Baseline Scan | ✅ Success |
+| E2E Playwright + Axe + Allure | ✅ Success |
+
+Por lo tanto, la versión integrada en la rama principal quedó validada mediante el pipeline CI/CD completo.
+
+---
+
+# 17. Resultado del Entregable 2
 
 | Requisito | Resultado |
 |---|---|
 | Proyecto parcial mejorado | ✅ |
+| Correcciones y mejoras incorporadas | ✅ |
 | Tests adicionales | ✅ |
 | Coverage ≥ 70 % | ✅ |
 | 36 unitarias | ✅ |
 | 13 E2E | ✅ |
-| Pipeline CI/CD | ✅ |
+| Pipeline CI/CD final en `main` | ✅ Success |
 | Security Scan | ✅ |
 | OWASP ZAP | ✅ |
 | k6 | ✅ |
 | Axe | ✅ |
 | Allure | ✅ |
 | SonarQube Cloud | ✅ |
+| Quality Gate | ✅ Passed |
 | IA actualizada | ✅ |
 | Evidencias automáticas | ✅ |
+| PR final fusionado a `main` | ✅ |
 
 ## Estado
 
 # ✅ CUMPLIMIENTO TÉCNICO COMPLETO
 
-La validación definitiva del pipeline se realizará mediante el Pull Request hacia `main`, donde también se ejecutará SonarQube Cloud y su correspondiente Quality Gate.
+El Entregable 2 quedó validado definitivamente mediante el Pull Request final, el Quality Gate aprobado en SonarQube Cloud y el pipeline #28 ejecutado sobre `main` en estado Success.
