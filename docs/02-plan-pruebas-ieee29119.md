@@ -6,9 +6,9 @@
 
 Proyecto: Biblioteca Virtual  
 Documento: Plan de Pruebas del Proyecto Final QA  
-Versión: 1.0  
-Estado: En ejecución  
-Rama evaluada: proyecto-final-qa  
+Versión: 1.1  
+Estado: Finalizado  
+Rama final evaluada: main  
 Norma de referencia: ISO/IEC/IEEE 29119-2:2021  
 
 ## 2. Propósito
@@ -94,7 +94,7 @@ La base de pruebas está formada por:
 
 ## 8. Estrategia basada en riesgos
 
-Las pruebas serán priorizadas de acuerdo con la probabilidad de ocurrencia y el impacto del defecto.
+Las pruebas fueron priorizadas de acuerdo con la probabilidad de ocurrencia y el impacto del defecto.
 
 | Riesgo | Probabilidad | Impacto | Prioridad |
 |---|---|---|---|
@@ -113,9 +113,9 @@ Las pruebas serán priorizadas de acuerdo con la probabilidad de ocurrencia y el
 
 ## 9. Técnicas de diseño de pruebas
 
-Se utilizarán técnicas de caja negra y caja blanca dependiendo del nivel de prueba.
+Se utilizaron técnicas de caja negra y caja blanca dependiendo del nivel de prueba.
 
-Las técnicas principales serán partición de equivalencia, análisis de valores límite, tablas de decisión, transición de estados, pruebas negativas, pruebas basadas en riesgos, pruebas de concurrencia, pruebas exploratorias y análisis estructural mediante cobertura de código.
+Las técnicas principales fueron partición de equivalencia, análisis de valores límite, tablas de decisión, transición de estados, pruebas negativas, pruebas basadas en riesgos, pruebas de concurrencia, pruebas exploratorias y análisis estructural mediante cobertura de código.
 
 ## 10. Ambiente de pruebas
 
@@ -136,53 +136,55 @@ Las técnicas principales serán partición de equivalencia, análisis de valore
 
 ## 11. Datos de prueba
 
-Los datos utilizados durante la automatización deberán ser controlados, reproducibles y preferiblemente independientes entre pruebas.
+Los datos utilizados durante la automatización fueron controlados, reproducibles e independientes entre pruebas cuando fue posible.
 
-Se utilizarán libros, lectores y préstamos creados específicamente para cada escenario cuando sea posible.
+Se utilizaron libros, lectores y préstamos creados específicamente para cada escenario.
 
-Las credenciales sensibles no deberán almacenarse directamente en el repositorio.
+Las credenciales sensibles no se almacenaron directamente en el repositorio.
 
-Los escenarios automatizados utilizarán fixtures, variables de entorno o datos efímeros cuando corresponda.
+Los escenarios automatizados utilizaron fixtures, variables de entorno o datos efímeros según correspondió.
 
 ## 12. Criterios de entrada
 
-Una ejecución podrá comenzar cuando:
+Una ejecución podía comenzar cuando:
 
-- El código pueda instalarse correctamente.
-- Las dependencias estén disponibles.
-- La base de datos pueda inicializarse.
-- La aplicación pueda iniciar sin errores críticos.
-- Los datos necesarios estén disponibles.
-- El ambiente de pruebas se encuentre operativo.
+- El código podía instalarse correctamente.
+- Las dependencias estaban disponibles.
+- La base de datos podía inicializarse.
+- La aplicación podía iniciar sin errores críticos.
+- Los datos necesarios estaban disponibles.
+- El ambiente de pruebas se encontraba operativo.
 
 ## 13. Criterios de salida
 
-La fase de pruebas podrá considerarse satisfactoria cuando:
+La fase de pruebas se consideró satisfactoria al cumplirse los siguientes criterios:
 
-- Las 36 pruebas unitarias sean aprobadas.
-- La cobertura mantenga los umbrales establecidos.
-- Al menos 10 escenarios E2E estén aprobados.
-- No existan vulnerabilidades High o Critical en dependencias de producción.
-- Los umbrales definidos en k6 sean satisfechos.
-- No existan defectos críticos abiertos que impidan los procesos principales.
-- Los reportes de ejecución sean generados correctamente.
-- La matriz de cobertura demuestre trazabilidad de los requisitos críticos.
+- 36 de 36 pruebas unitarias aprobadas.
+- 13 de 13 escenarios E2E aprobados.
+- Cobertura superior al 70 % en todas las métricas exigidas.
+- 0 vulnerabilidades High o Critical en dependencias de producción.
+- Umbrales definidos en k6 satisfechos.
+- 0 vulnerabilidades High en OWASP ZAP.
+- SonarQube Cloud con Quality Gate aprobado.
+- Reportes y artefactos generados correctamente.
+- Matriz de cobertura con trazabilidad de los requisitos críticos.
+- Pipeline final sobre `main` completado satisfactoriamente.
 
 ## 14. Criterios de suspensión
 
-Las pruebas podrán suspenderse cuando la aplicación no pueda iniciar, la base de datos se encuentre corrupta, exista un defecto bloqueante que impida continuar los flujos principales, fallen dependencias indispensables del entorno o el ambiente produzca resultados no reproducibles.
+Las pruebas podían suspenderse cuando la aplicación no pudiera iniciar, la base de datos se encontrara corrupta, existiera un defecto bloqueante que impidiera continuar los flujos principales, fallaran dependencias indispensables del entorno o el ambiente produjera resultados no reproducibles.
 
 ## 15. Criterios de reanudación
 
-Las pruebas podrán reanudarse una vez corregido el problema bloqueante, restaurado el ambiente, verificada la estabilidad básica de la aplicación y ejecutadas satisfactoriamente las pruebas de humo correspondientes.
+Las pruebas podían reanudarse una vez corregido el problema bloqueante, restaurado el ambiente, verificada la estabilidad básica de la aplicación y ejecutadas satisfactoriamente las pruebas de humo correspondientes.
 
 ## 16. Gestión de defectos
 
-Los defectos deberán contener como mínimo:
+Los defectos debían contener como mínimo:
 
 ID del defecto, título, módulo afectado, severidad, prioridad, precondiciones, pasos para reproducir, resultado esperado, resultado obtenido, evidencia y estado.
 
-Los niveles de severidad utilizados serán:
+Los niveles de severidad utilizados fueron:
 
 Crítica: impide una función esencial o produce pérdida o corrupción grave de datos.  
 Alta: afecta una función importante sin alternativa aceptable.  
@@ -191,17 +193,17 @@ Baja: impacto menor, visual o de facilidad de uso.
 
 ## 17. Automatización
 
-La automatización se ejecutará mediante GitHub Actions.
+La automatización se ejecutó mediante GitHub Actions.
 
-El pipeline incluye:
+El pipeline final incluye:
 
 Jest y cobertura → Playwright + Axe + Allure → auditoría de dependencias → SonarQube Cloud → k6 → OWASP ZAP.
 
-La ejecución automatizada permitirá detectar regresiones durante el proceso de integración continua.
+La ejecución automatizada permitió detectar regresiones durante el proceso de integración continua y validar la versión final integrada en `main`.
 
 ## 18. Evidencias y entregables
 
-Los principales entregables del proceso serán:
+Los principales entregables del proceso son:
 
 - Plan de pruebas.
 - Análisis ISO/IEC 25010.
@@ -218,10 +220,12 @@ Los principales entregables del proceso serán:
 - Evidencias de inteligencia artificial.
 - Evidencias de regresión visual con Percy.
 - Ejecuciones de GitHub Actions.
+- Pull Request final hacia `main` con Quality Gate aprobado.
+- Pipeline final de `main` completado en estado Success.
 
 ## 19. Métricas
 
-Se recopilarán las siguientes métricas:
+Se recopilaron las siguientes métricas:
 
 | Métrica | Indicador |
 |---|---|
@@ -248,12 +252,12 @@ IA: apoyar el diseño y generación de pruebas bajo revisión humana.
 
 ## 21. Trazabilidad
 
-Cada requisito funcional y no funcional será relacionado con uno o más casos de prueba mediante una matriz de cobertura.
+Cada requisito funcional y no funcional fue relacionado con uno o más casos de prueba mediante una matriz de cobertura.
 
-La trazabilidad permitirá comprobar que los procesos críticos del sistema cuentan con evidencia suficiente y permitirá identificar requisitos con cobertura insuficiente.
+La trazabilidad permitió comprobar que los procesos críticos del sistema cuentan con evidencia suficiente e identificar áreas con menor profundidad de validación.
 
-## 22. Resultado esperado
+## 22. Resultado final
 
-El producto será considerado candidato para liberación cuando los controles críticos definidos en este plan sean satisfactorios y no existan defectos críticos conocidos que comprometan la operación del sistema.
+El producto completó satisfactoriamente los controles críticos definidos en este plan. El Pull Request final hacia `main` obtuvo Quality Gate aprobado en SonarQube Cloud y posteriormente fue fusionado; el pipeline #28 ejecutado sobre `main` finalizó en estado Success con los jobs de Unit Tests + Coverage, Dependency Security Scan, SonarQube Cloud Scan, k6 Load Test, OWASP ZAP Baseline Scan y E2E Playwright + Axe + Allure aprobados.
 
-El resultado final del proceso deberá proporcionar evidencia objetiva suficiente para responder a la decisión de calidad: APROBADO o NO APROBADO para liberación.
+La decisión de calidad se mantiene como **APROBADO CON MEJORAS ANTES DE PRODUCCIÓN**, debido a los hallazgos Medium documentados por OWASP ZAP, aun cuando la suite técnica y el pipeline final se encuentran completamente aprobados.
