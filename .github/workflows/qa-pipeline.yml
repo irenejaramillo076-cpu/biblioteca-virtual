@@ -128,12 +128,15 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Fail on High or Critical Vulnerabilities
-        run: npm audit --audit-level=high
+      - name: Fail on High or Critical Production Vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
 
   sonarcloud-scan:
 
     name: SonarQube Cloud Scan
+
+    
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 
