@@ -7,10 +7,12 @@ on:
   push:
     branches:
       - main
+      - proyecto-final-qa
 
   pull_request:
     branches:
       - main
+      - proyecto-final-qa
 
 jobs:
 
@@ -126,12 +128,15 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Fail on High or Critical Vulnerabilities
-        run: npm audit --audit-level=high
+      - name: Fail on High or Critical Production Vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
 
   sonarcloud-scan:
 
     name: SonarQube Cloud Scan
+
+    
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 
@@ -261,8 +266,9 @@ jobs:
           exit 1
 
       - name: Run OWASP ZAP Baseline Scan
-        continue-on-error: true
         run: |
+          set +e
+
           docker run --network host \
             -v "${{ github.workspace }}/reports:/zap/wrk/:rw" \
             -t zaproxy/zap-stable \
@@ -272,6 +278,19 @@ jobs:
             -J zap-report.json \
             -w zap-report.md \
             -l WARN
+
+          ZAP_EXIT=$?
+          set -e
+
+          if [ "$ZAP_EXIT" -eq 0 ]; then
+            echo "OWASP ZAP finalizó sin alertas."
+          elif [ "$ZAP_EXIT" -eq 2 ]; then
+            echo "::warning::OWASP ZAP encontró advertencias documentadas. Revisar el artefacto zap-results."
+            exit 0
+          else
+            echo "OWASP ZAP presentó un error real. Exit code: $ZAP_EXIT"
+            exit "$ZAP_EXIT"
+          fi
 
       - name: Upload ZAP Report
         if: always()

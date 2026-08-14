@@ -20,3 +20,7 @@ allure-results/
 !.env.example
 .DS_Store
 Thumbs.db
+
+# Evidencias del laboratorio de Visual Regression Testing
+!reports/visual-regression/
+!reports/visual-regression/**
