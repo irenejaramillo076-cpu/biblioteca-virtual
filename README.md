@@ -163,14 +163,85 @@ Los artefactos disponibles son `coverage-report`, `allure-report`, `e2e-failure-
 | GET, POST | `/api/prestamos` | Consulta o registra préstamos |
 | PUT | `/api/prestamos/:id/devolver` | Registra una devolución |
 
-## Uso de IA en este Proyecto
+## IA en el proyecto
 
-| Herramienta IA | Tarea | Prompt utilizado | Resultado | Correcciones aplicadas |
-|---|---|---|---|---|
-| GitHub Copilot | Generar una base para Page Objects | `Create a Page Object for the login page with Playwright, using accessible locators and reusable actions` | Propuso la clase inicial y acciones de autenticación | Se adaptaron nombres al español, se corrigieron localizadores, se trasladaron todos los selectores fuera de los specs y se agregaron verificaciones explícitas |
-| ChatGPT Codex | Auditar y completar la suite profesional | `Actúa como QA Engineer, revisa este repositorio contra la rúbrica, crea al menos 25 pruebas unitarias, 12 E2E con POM, 6 escenarios Gherkin, Axe, Allure y el pipeline obligatorio` | Detectó faltantes y generó pruebas, fixtures, configuración y documentación | El equipo validó cada flujo contra la interfaz real, eliminó duplicados, corrigió una etiqueta de accesibilidad, endureció el umbral de cobertura y comprobó los comandos localmente |
+La inteligencia artificial se integró al flujo de QA como herramienta de apoyo para diseño de casos, generación de automatización y construcción de Page Objects; todos los resultados generados fueron revisados y ejecutados antes de incorporarse a la suite.
 
-La IA se utilizó como apoyo para acelerar el diseño y la revisión; la aceptación final se basó en ejecuciones reproducibles de Jest, Playwright, Axe, Allure y npm audit, no solamente en el contenido generado.
+### Requisito A — Prompt Engineering para QA
+
+Se diseñaron tres prompts estratégicos orientados a diferentes riesgos del sistema.
+
+| Prompt | Área evaluada | Casos seleccionados para automatización | Primera ejecución | Tiempo |
+|---|---|---:|---:|---:|
+| Prompt 1 | Seguridad del Login | 5 | 5/5 aprobados | 13.1 s |
+| Prompt 2 | Valores límite del Catálogo | 5 | 5/5 aprobados | 7.8 s |
+| Prompt 3 | Riesgos y consistencia de Préstamos | 5 | 5/5 aprobados | 1.0 s |
+| Total | — | 15 | 15/15 aprobados | 21.9 s |
+
+Los tests generados se almacenaron en `tests/ai-generated/`.
+
+La revisión humana fue necesaria incluso cuando los tests seleccionados funcionaron correctamente; por ejemplo, la IA propuso evaluar el ISBN vacío como posible escenario negativo, pero al revisar la implementación se confirmó que el ISBN es opcional, por lo que no se creó una prueba con una expectativa incorrecta.
+
+También se identificaron escenarios duplicados respecto de la suite existente y casos que requerían revisión de requisitos antes de ser automatizados.
+
+### Requisito A — GitHub Copilot y Page Object Model
+
+GitHub Copilot fue utilizado para generar dos Page Objects adicionales:
+
+- `DashboardPage.js`
+- `CatalogSearchPage.js`
+
+También generó `tests/ai-generated/copilot-e2e.spec.js` con cuatro pruebas E2E.
+
+La primera propuesta de Copilot no funcionó correctamente en el proyecto real.
+
+| Estado primera ejecución | Cantidad |
+|---|---:|
+| Aprobados | 0 |
+| Fallidos | 3 |
+| Omitidos | 1 |
+| Total | 4 |
+
+Durante la revisión se detectó que Copilot asumió una ruta `/dashboard` inexistente, utilizó locators genéricos que no correspondían al DOM real y propuso un mecanismo de credenciales diferente al utilizado por Biblioteca Virtual.
+
+Se conservaron la arquitectura Page Object Model, CommonJS y el uso de locators accesibles; se modificaron la navegación, los selectores, los datos de prueba y el flujo de autenticación.
+
+Después de la revisión humana:
+
+| Estado final | Cantidad |
+|---|---:|
+| Aprobados | 4 |
+| Fallidos | 0 |
+| Omitidos | 0 |
+| Total | 4 |
+
+El resultado final fue 4/4 pruebas aprobadas en 14.6 segundos.
+
+El código original propuesto por Copilot se conserva en `tests/ai-generated/evidence/` para documentar la comparación BEFORE/AFTER.
+
+### Requisito B — Visual Regression Testing con Percy
+
+Se integró Percy con Playwright mediante `@percy/cli` y `@percy/playwright`.
+
+Se creó un snapshot visual denominado `Biblioteca Virtual - Catalogo`.
+
+El primer build fue utilizado como baseline; posteriormente se aplicó un cambio visual temporal en el título y botón principal del catálogo y se ejecutó nuevamente el mismo snapshot.
+
+Percy detectó correctamente una diferencia visual de **11.21 %** entre el baseline y el nuevo build.
+
+Después de obtener la evidencia, el cambio CSS temporal fue eliminado para conservar el diseño original de la aplicación.
+
+Las capturas de esta evaluación se almacenan en `reports/visual-regression/`.
+
+### Evaluación crítica del uso de IA
+
+La IA permitió ampliar rápidamente la cobertura de pruebas y proponer escenarios que incluyen seguridad, valores límite, integridad de datos y concurrencia; sin embargo, los resultados demostraron que la generación automática no reemplaza la revisión del QA Engineer.
+
+Los 15 tests seleccionados a partir de los prompts funcionaron en su primera ejecución, pero fue necesario descartar o reinterpretar otras recomendaciones de acuerdo con las reglas reales del sistema.
+
+El caso de GitHub Copilot mostró de manera más evidente esta necesidad; ninguna de las cuatro pruebas propuestas inicialmente pudo considerarse aprobada en la primera ejecución, mientras que después de revisar el DOM, las rutas, los Page Objects existentes y los datos de prueba, las cuatro pruebas fueron ejecutadas satisfactoriamente.
+
+Por lo tanto, el mayor beneficio de la IA fue acelerar el diseño y proporcionar una base de trabajo; la validación humana continuó siendo indispensable para garantizar que las pruebas representaran el comportamiento real de Biblioteca Virtual.
 
 ## Evidencias para la entrega
 
