@@ -7,10 +7,12 @@ on:
   push:
     branches:
       - main
+      - proyecto-final-qa
 
   pull_request:
     branches:
       - main
+      - proyecto-final-qa
 
 jobs:
 
